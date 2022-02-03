@@ -62,6 +62,7 @@ func (s *Server) Ready() bool {
 		s.Router != nil &&
 		s.Mailer != nil &&
 		s.Push != nil &&
+		s.Redis != nil &&
 		s.I18n != nil
 }
 

@@ -82,6 +82,10 @@ func execClosureNewTestServer(ctx context.Context, t *testing.T, config config.S
 		t.Fatalf("Failed to init i18n service: %v", err)
 	}
 
+	if err := s.InitRedis(); err != nil {
+		t.Fatalf("Failed to init redis service: %v", err)
+	}
+
 	router.Init(s)
 
 	closure(s)

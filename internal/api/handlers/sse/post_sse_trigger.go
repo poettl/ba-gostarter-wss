@@ -22,7 +22,7 @@ func getSSETriggerHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		if err := s.Redis.Publish(ctx, "test", params.Value).Err(); err != nil {
-			panic(err)
+			return err
 		}
 
 		return c.NoContent(http.StatusNoContent)

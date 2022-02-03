@@ -106,6 +106,10 @@ func runServer() {
 		log.Fatal().Err(err).Msg("Failed to initialize i18n service")
 	}
 
+	if err := s.InitRedis(); err != nil {
+		log.Fatal().Err(err).Msg("Failed to initialize redis service")
+	}
+
 	router.Init(s)
 
 	go func() {
