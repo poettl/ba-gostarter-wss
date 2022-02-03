@@ -3,46 +3,34 @@ package wss
 import (
 	"context"
 	"encoding/json"
-	"fmt"
-	"log"
 
 	"allaboutapps.dev/aw/go-starter/internal/api"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
+	"github.com/rs/zerolog/log"
 )
 
 var (
 	upgrader = websocket.Upgrader{}
 )
 
-func handleSubscriptions(ctx context.Context, s *api.Server, msg []byte, subscriber *redis.PubSub, ws *websocket.Conn, errChannel chan error) {
-	if subscriber != nil {
-		subscriber.Close()
-	}
-	fmt.Println("starting subscription goroutine")
-	channels := []string{}
-	if err := json.Unmarshal(msg, &channels); err != nil {
-		errChannel <- err
-		ws.Close()
-		return
-	}
-	if len(channels) == 0 {
-		return
-	}
-	subscriber = s.Redis.Subscribe(ctx, channels...)
+func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.PubSub, ws *websocket.Conn) {
+	errChannel := make(chan error)
+	log.Debug().Msg("Subscribing to redis channels")
 	for {
 		msg, err := subscriber.ReceiveMessage(ctx)
 		if err != nil {
 			errChannel <- err
 			return
 		}
-		fmt.Println("Received message from " + msg.Channel + " channel.")
-		fmt.Printf("%+v\n", msg.Payload)
+		log.Debug().Msg("Received message from redis channel \n" + msg.Channel + ": " + msg.Payload)
 		select {
 		case <-ctx.Done():
-			log.Println("Context canceled")
+			log.Debug().Msg("Context canceled")
 			ws.Close()
+		case <-errChannel:
+			log.Error().Msg("Error receiving message")
 		default:
 			err := ws.WriteMessage(websocket.TextMessage, []byte(msg.Channel))
 			if err != nil {
@@ -50,7 +38,9 @@ func handleSubscriptions(ctx context.Context, s *api.Server, msg []byte, subscri
 				return
 			}
 		}
+		// time.Sleep(200 * time.Millisecond)
 	}
+
 }
 
 func GetWSSStreamRoute(s *api.Server) *echo.Route {
@@ -64,22 +54,32 @@ func getWSSStreamHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 		ctx := c.Request().Context()
-		errChannel := make(chan error)
 		var subscriber *redis.PubSub
-		err = <-errChannel
-		if err != nil {
-			return err
-		}
 		defer ws.Close()
-		var msg []byte
 		for {
-			go handleSubscriptions(ctx, s, msg, subscriber, ws, errChannel)
 			// Read
 			_, msg, err := ws.ReadMessage()
 			if err != nil {
 				c.Logger().Error(err)
 			}
-			fmt.Printf("%s\n", msg)
+			log.Debug().Msg("Received message from client: " + string(msg))
+
+			// handle subscriptions
+			if subscriber != nil {
+				log.Debug().Msg("Subscription to redis channel already exists")
+				subscriber.Close()
+				subscriber = nil
+			}
+			channels := []string{}
+			if err := json.Unmarshal(msg, &channels); err != nil {
+				log.Err(err).Msg("Failed to unmarshal channels")
+				ws.Close()
+				return err
+			}
+			subscriber = s.Redis.Subscribe(ctx, channels...)
+			go handleSubscriptions(ctx, s, subscriber, ws)
+			// TODO handle error channel
 		}
+
 	}
 }
