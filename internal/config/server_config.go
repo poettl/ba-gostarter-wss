@@ -95,6 +95,13 @@ type I18n struct {
 	BundleDirAbs    string
 }
 
+type Redis struct {
+	Addr     string
+	Username string
+	Password string
+	DB       int
+}
+
 type Server struct {
 	Database   Database
 	Echo       EchoServer
@@ -105,6 +112,7 @@ type Server struct {
 	Mailer     Mailer
 	SMTP       transport.SMTPMailTransportConfig
 	Frontend   FrontendServer
+	Redis      Redis
 	Logger     LoggerServer
 	Push       PushService
 	FCMConfig  provider.FCMConfig
@@ -226,6 +234,12 @@ func DefaultServiceConfigFromEnv() Server {
 			I18n: I18n{
 				DefaultLanguage: util.GetEnvAsLanguageTag("SERVER_I18N_DEFAULT_LANGUAGE", language.English),
 				BundleDirAbs:    util.GetEnv("SERVER_I18N_BUNDLE_DIR_ABS", filepath.Join(util.GetProjectRootDir(), "/web/i18n")), // /app/web/i18n
+			},
+			Redis: Redis{
+				Addr:     util.GetEnv("SERVER_REDIS_ADDR", "redis:6379"),
+				DB:       util.GetEnvAsInt("SERVER_REDIS_DB", 0),
+				Username: util.GetEnv("SERVER_REDIS_USERNAME", ""),
+				Password: util.GetEnv("SERVER_REDIS_PASSWORD", ""),
 			},
 		}
 

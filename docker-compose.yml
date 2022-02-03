@@ -27,6 +27,7 @@ services:
     depends_on:
       - postgres
       - integresql
+      - redis
     environment:
       # required: env for main working database, service
       # default for sql-migrate (target development) and psql cli tool
@@ -90,7 +91,10 @@ services:
       POSTGRES_PASSWORD: *PGPASSWORD
     volumes:
       - pgvolume:/var/lib/postgresql/data
-
+  redis:
+    image: redis:6.0.9-alpine
+    expose:
+      - "6379"
   integresql:
     image: allaboutapps/integresql:1.0.0
     expose:
@@ -130,11 +134,10 @@ services:
 volumes:
   # postgresql: declare a named volume to persist DB data
   pgvolume:
-
-  # go: go mod cached downloads
+ # go: go mod cached downloads
   go-pkg:
 
-  # vscode: Avoiding extension reinstalls on container rebuild
-  # https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
+    # vscode: Avoiding extension reinstalls on container rebuild
+    # https://code.visualstudio.com/docs/remote/containers-advanced#_avoiding-extension-reinstalls-on-container-rebuild
   vscode-extensions:
   vscode-extensions-insiders:

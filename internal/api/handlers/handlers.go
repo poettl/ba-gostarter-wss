@@ -6,6 +6,7 @@ import (
 	"allaboutapps.dev/aw/go-starter/internal/api/handlers/auth"
 	"allaboutapps.dev/aw/go-starter/internal/api/handlers/common"
 	"allaboutapps.dev/aw/go-starter/internal/api/handlers/push"
+	"allaboutapps.dev/aw/go-starter/internal/api/handlers/sse"
 	"github.com/labstack/echo/v4"
 )
 
@@ -26,5 +27,7 @@ func AttachAllRoutes(s *api.Server) {
 		common.GetVersionRoute(s),
 		push.GetPushTestRoute(s),
 		push.PostUpdatePushTokenRoute(s),
+		sse.GetSEEStreamRoute(s),
+		sse.GetSSETriggerRoute(s),
 	}
 }

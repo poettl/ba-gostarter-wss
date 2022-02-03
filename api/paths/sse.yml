@@ -1,0 +1,29 @@
+swagger: "2.0"
+info:
+  title: allaboutapps.dev/aw/go-starter
+  version: 0.1.0
+paths:
+  /api/v1/sse/stream:
+    get:
+      description: test endpoint for sse streams
+      tags:
+        - sse
+      summary: Test Endpoint for sse streams
+      operationId: GetSEEStreamRoute
+      responses:
+        "200":
+          description: GetSEEStreamResponse
+          schema:
+            $ref: ../definitions/sse.yml#/definitions/GetSEEStreamResponse
+  /api/v1/sse/trigger/{value}:
+    get:
+      description: test endpoint for triggering sse streams
+      tags:
+        - sse
+      summary: Test Endpoint for triggering sse streams
+      parameters:
+        - $ref: "../definitions/sse.yml#/parameters/valueParam"
+      operationId: GetSSETriggerRoute
+      responses:
+        "204":
+          description: Ok

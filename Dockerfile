@@ -57,6 +57,7 @@ RUN apt-get update \
     xz-utils \
     postgresql-client-12 \
     icu-devtools \
+    redis-tools  \
     # --- END DEVELOPMENT ---
     # 
     && apt-get clean \

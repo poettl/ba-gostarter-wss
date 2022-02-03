@@ -1,0 +1,16 @@
+swagger: "2.0"
+info:
+  title: allaboutapps.dev/aw/go-starter
+  version: 0.1.0
+paths: {}
+definitions:
+  GetSEEStreamResponse:
+    type: string
+    example: hello world
+parameters:
+  valueParam:
+    required: true
+    type: string
+    in: path
+    name: value
+    description: Value

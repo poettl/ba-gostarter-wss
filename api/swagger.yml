@@ -321,6 +321,34 @@ paths:
           description: PublicHTTPError, type `PUSH_TOKEN_ALREADY_EXISTS`
           schema:
             $ref: '#/definitions/publicHttpError'
+  /api/v1/sse/stream:
+    get:
+      description: test endpoint for sse streams
+      tags:
+      - sse
+      summary: Test Endpoint for sse streams
+      operationId: GetSEEStreamRoute
+      responses:
+        "200":
+          description: GetSEEStreamResponse
+          schema:
+            $ref: '#/definitions/getSEEStreamResponse'
+  /api/v1/sse/trigger/{value}:
+    get:
+      description: test endpoint for triggering sse streams
+      tags:
+      - sse
+      summary: Test Endpoint for triggering sse streams
+      operationId: GetSSETriggerRoute
+      parameters:
+      - type: string
+        description: Value
+        name: value
+        in: path
+        required: true
+      responses:
+        "204":
+          description: Ok
   /swagger.yml:
     get:
       description: |-
@@ -336,6 +364,9 @@ paths:
         "200":
           description: OK
 definitions:
+  getSEEStreamResponse:
+    type: string
+    example: hello world
   getUserInfoResponse:
     type: object
     required:

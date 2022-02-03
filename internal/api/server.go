@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"allaboutapps.dev/aw/go-starter/internal/config"
 	"allaboutapps.dev/aw/go-starter/internal/i18n"
@@ -12,6 +13,7 @@ import (
 	"allaboutapps.dev/aw/go-starter/internal/mailer/transport"
 	"allaboutapps.dev/aw/go-starter/internal/push"
 	"allaboutapps.dev/aw/go-starter/internal/push/provider"
+	"github.com/go-redis/redis/v8"
 	"github.com/labstack/echo/v4"
 	"github.com/rs/zerolog/log"
 
@@ -25,6 +27,7 @@ type Router struct {
 	Management *echo.Group
 	APIV1Auth  *echo.Group
 	APIV1Push  *echo.Group
+	APIV1SSE   *echo.Group
 }
 
 type Server struct {
@@ -35,6 +38,7 @@ type Server struct {
 	Mailer *mailer.Mailer
 	Push   *push.Service
 	I18n   *i18n.Service
+	Redis  *redis.Client
 }
 
 func NewServer(config config.Server) *Server {
@@ -46,6 +50,7 @@ func NewServer(config config.Server) *Server {
 		Mailer: nil,
 		Push:   nil,
 		I18n:   nil,
+		Redis:  nil,
 	}
 
 	return s
@@ -81,6 +86,25 @@ func (s *Server) InitDB(ctx context.Context) error {
 	}
 
 	s.DB = db
+
+	return nil
+}
+
+func (s *Server) InitRedis() error {
+	s.Redis = redis.NewClient(&redis.Options{
+		Addr:     s.Config.Redis.Addr,
+		Username: s.Config.Redis.Username,
+		Password: s.Config.Redis.Password,
+		DB:       s.Config.Redis.DB,
+	})
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	_, err := s.Redis.Ping(ctx).Result()
+	if err != nil {
+		return err
+	}
 
 	return nil
 }
