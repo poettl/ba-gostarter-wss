@@ -327,12 +327,20 @@ paths:
       tags:
       - sse
       summary: Test Endpoint for sse streams
-      operationId: GetSEEStreamRoute
+      operationId: GetSSEStreamRoute
+      parameters:
+      - type: array
+        items:
+          type: string
+        description: Channel List
+        name: channelList
+        in: query
+        required: true
       responses:
         "200":
           description: GetSEEStreamResponse
           schema:
-            $ref: '#/definitions/getSEEStreamResponse'
+            $ref: '#/definitions/getStreamResponse'
   /api/v1/sse/trigger/{value}:
     get:
       description: test endpoint for triggering sse streams
@@ -349,6 +357,18 @@ paths:
       responses:
         "204":
           description: Ok
+  /api/v1/wss/stream:
+    get:
+      description: test endpoint for wss streams
+      tags:
+      - wss
+      summary: Test Endpoint for wss streams
+      operationId: GetWSSStreamRoute
+      responses:
+        "200":
+          description: GetStreamResponse
+          schema:
+            $ref: '#/definitions/getStreamResponse'
   /swagger.yml:
     get:
       description: |-
@@ -364,9 +384,9 @@ paths:
         "200":
           description: OK
 definitions:
-  getSEEStreamResponse:
+  getStreamResponse:
     type: string
-    example: hello world
+    example: channel1
   getUserInfoResponse:
     type: object
     required:

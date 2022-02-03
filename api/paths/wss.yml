@@ -1,0 +1,17 @@
+swagger: "2.0"
+info:
+  title: allaboutapps.dev/aw/go-starter
+  version: 0.1.0
+paths:
+  /api/v1/wss/stream:
+    get:
+      description: test endpoint for wss streams
+      tags:
+        - wss
+      summary: Test Endpoint for wss streams
+      operationId: GetWSSStreamRoute
+      responses:
+        "200":
+          description: GetStreamResponse
+          schema:
+            $ref: ../definitions/sse.yml#/definitions/GetStreamResponse

@@ -9,12 +9,14 @@ paths:
       tags:
         - sse
       summary: Test Endpoint for sse streams
-      operationId: GetSEEStreamRoute
+      operationId: GetSSEStreamRoute
+      parameters:
+        - $ref: "../definitions/sse.yml#/parameters/channelList"
       responses:
         "200":
           description: GetSEEStreamResponse
           schema:
-            $ref: ../definitions/sse.yml#/definitions/GetSEEStreamResponse
+            $ref: ../definitions/sse.yml#/definitions/GetStreamResponse
   /api/v1/sse/trigger/{value}:
     get:
       description: test endpoint for triggering sse streams

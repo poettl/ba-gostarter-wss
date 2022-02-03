@@ -2,6 +2,7 @@ package sse
 
 import (
 	"net/http"
+	"time"
 
 	"allaboutapps.dev/aw/go-starter/internal/api"
 	"allaboutapps.dev/aw/go-starter/internal/types/sse"
@@ -21,7 +22,7 @@ func getSSETriggerHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 
-		if err := s.Redis.Publish(ctx, "test", params.Value).Err(); err != nil {
+		if err := s.Redis.Publish(ctx, params.Value, time.Now()).Err(); err != nil {
 			return err
 		}
 
