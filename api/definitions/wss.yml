@@ -1,0 +1,14 @@
+swagger: "2.0"
+info:
+  title: allaboutapps.dev/aw/go-starter
+  version: 0.1.0
+paths: {}
+definitions: {}
+parameters:
+  wssTokenParam:
+    required: true
+    type: string
+    format: uuid
+    in: query
+    name: wssToken
+    description: token

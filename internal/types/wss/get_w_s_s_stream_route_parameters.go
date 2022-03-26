@@ -9,8 +9,10 @@ import (
 	"net/http"
 
 	"github.com/go-openapi/errors"
+	"github.com/go-openapi/runtime"
 	"github.com/go-openapi/runtime/middleware"
 	"github.com/go-openapi/strfmt"
+	"github.com/go-openapi/validate"
 )
 
 // NewGetWSSStreamRouteParams creates a new GetWSSStreamRouteParams object
@@ -28,6 +30,12 @@ type GetWSSStreamRouteParams struct {
 
 	// HTTP Request Object
 	HTTPRequest *http.Request `json:"-"`
+
+	/*token
+	  Required: true
+	  In: query
+	*/
+	WssToken strfmt.UUID `query:"wssToken"`
 }
 
 // BindRequest both binds and validates a request, it assumes that complex things implement a Validatable(strfmt.Registry) error interface
@@ -39,6 +47,13 @@ func (o *GetWSSStreamRouteParams) BindRequest(r *http.Request, route *middleware
 
 	o.HTTPRequest = r
 
+	qs := runtime.Values(r.URL.Query())
+
+	qWssToken, qhkWssToken, _ := qs.GetOK("wssToken")
+	if err := o.bindWssToken(qWssToken, qhkWssToken, route.Formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
 	}
@@ -48,8 +63,58 @@ func (o *GetWSSStreamRouteParams) BindRequest(r *http.Request, route *middleware
 func (o *GetWSSStreamRouteParams) Validate(formats strfmt.Registry) error {
 	var res []error
 
+	// wssToken
+	// Required: true
+	// AllowEmptyValue: false
+	if err := validate.Required("wssToken", "query", o.WssToken); err != nil {
+		res = append(res, err)
+	}
+
+	if err := o.validateWssToken(formats); err != nil {
+		res = append(res, err)
+	}
+
 	if len(res) > 0 {
 		return errors.CompositeValidationError(res...)
+	}
+	return nil
+}
+
+// bindWssToken binds and validates parameter WssToken from query.
+func (o *GetWSSStreamRouteParams) bindWssToken(rawData []string, hasKey bool, formats strfmt.Registry) error {
+	if !hasKey {
+		return errors.Required("wssToken", "query", rawData)
+	}
+	var raw string
+	if len(rawData) > 0 {
+		raw = rawData[len(rawData)-1]
+	}
+
+	// Required: true
+	// AllowEmptyValue: false
+	if err := validate.RequiredString("wssToken", "query", raw); err != nil {
+		return err
+	}
+
+	// Format: uuid
+	value, err := formats.Parse("uuid", raw)
+	if err != nil {
+		return errors.InvalidType("wssToken", "query", "strfmt.UUID", raw)
+	}
+	o.WssToken = *(value.(*strfmt.UUID))
+
+	if err := o.validateWssToken(formats); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// validateWssToken carries on validations for parameter WssToken
+func (o *GetWSSStreamRouteParams) validateWssToken(formats strfmt.Registry) error {
+
+	if err := validate.FormatOf("wssToken", "query", "uuid", o.WssToken.String(), formats); err != nil {
+		return err
 	}
 	return nil
 }

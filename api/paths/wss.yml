@@ -9,9 +9,23 @@ paths:
       tags:
         - wss
       summary: Test Endpoint for wss streams
+      parameters:
+        - $ref: "../definitions/wss.yml#/parameters/wssTokenParam"
       operationId: GetWSSStreamRoute
       responses:
         "200":
           description: GetStreamResponse
           schema:
             $ref: ../definitions/sse.yml#/definitions/GetStreamResponse
+  /api/v1/wss/token:
+    get:
+      description: endpoint for wss token
+      tags:
+        - wss
+      summary: Endpoint for wss token
+      operationId: GetWSSTokenRoute
+      responses:
+        "200":
+          description: GetWSSTokenResponse
+          schema:
+            $ref: ../definitions/sse.yml#/definitions/GetWSSTokenResponse

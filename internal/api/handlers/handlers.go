@@ -31,5 +31,6 @@ func AttachAllRoutes(s *api.Server) {
 		sse.GetSSEStreamRoute(s),
 		sse.GetSSETriggerRoute(s),
 		wss.GetWSSStreamRoute(s),
+		wss.GetWSSTokenRoute(s),
 	}
 }

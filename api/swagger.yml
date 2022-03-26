@@ -364,11 +364,30 @@ paths:
       - wss
       summary: Test Endpoint for wss streams
       operationId: GetWSSStreamRoute
+      parameters:
+      - type: string
+        format: uuid
+        description: token
+        name: wssToken
+        in: query
+        required: true
       responses:
         "200":
           description: GetStreamResponse
           schema:
             $ref: '#/definitions/getStreamResponse'
+  /api/v1/wss/token:
+    get:
+      description: endpoint for wss token
+      tags:
+      - wss
+      summary: Endpoint for wss token
+      operationId: GetWSSTokenRoute
+      responses:
+        "200":
+          description: GetWSSTokenResponse
+          schema:
+            $ref: '#/definitions/getWSSTokenResponse'
   /swagger.yml:
     get:
       description: |-
@@ -417,6 +436,15 @@ definitions:
         description: Unix timestamp the user's info was last updated at
         type: integer
         example: 1591960808
+  getWSSTokenResponse:
+    type: object
+    required:
+    - token
+    properties:
+      token:
+        type: string
+        format: uuid
+        example: f0f8e8f8-f0f8-f0f8-f0f8-f0f8f0f8f0f8
   httpValidationErrorDetail:
     type: object
     required:

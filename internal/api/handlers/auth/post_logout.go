@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"net/http"
+	"time"
 
 	"allaboutapps.dev/aw/go-starter/internal/api"
 	"allaboutapps.dev/aw/go-starter/internal/api/auth"
@@ -30,8 +31,14 @@ func postLogoutHandler(s *api.Server) echo.HandlerFunc {
 		}
 
 		token := auth.AccessTokenFromEchoContext(c)
+		user := auth.UserFromContext(ctx)
 
 		if err := db.WithTransaction(ctx, s.DB, func(tx boil.ContextExecutor) error {
+
+			if err := s.Redis.Publish(ctx, user.ID+"-logout", time.Now()).Err(); err != nil {
+				return err
+			}
+
 			if _, err := models.AccessTokens(models.AccessTokenWhere.Token.EQ(*token)).DeleteAll(ctx, tx); err != nil {
 				log.Debug().Err(err).Msg("Failed to delete access token")
 				return err

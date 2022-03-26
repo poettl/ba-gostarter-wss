@@ -188,7 +188,17 @@ func Init(s *api.Server) {
 		// Your other endpoints, typically secured by bearer auth, available at /api/v1/**
 		APIV1Push: s.Echo.Group("/api/v1/push", middleware.Auth(s)),
 		APIV1SSE:  s.Echo.Group("/api/v1/sse"),
-		APIV1WSS:  s.Echo.Group("/api/v1/wss"),
+		APIV1WSS: s.Echo.Group("/api/v1/wss", middleware.AuthWithConfig(middleware.AuthConfig{
+			S:    s,
+			Mode: middleware.AuthModeRequired,
+			Skipper: func(c echo.Context) bool {
+				switch c.Path() {
+				case "/api/v1/wss/stream":
+					return true
+				}
+				return false
+			},
+		})),
 	}
 
 	// ---

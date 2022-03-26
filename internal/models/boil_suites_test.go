@@ -18,6 +18,7 @@ func TestParent(t *testing.T) {
 	t.Run("PushTokens", testPushTokens)
 	t.Run("RefreshTokens", testRefreshTokens)
 	t.Run("Users", testUsers)
+	t.Run("WSSTokens", testWSSTokens)
 }
 
 func TestDelete(t *testing.T) {
@@ -27,6 +28,7 @@ func TestDelete(t *testing.T) {
 	t.Run("PushTokens", testPushTokensDelete)
 	t.Run("RefreshTokens", testRefreshTokensDelete)
 	t.Run("Users", testUsersDelete)
+	t.Run("WSSTokens", testWSSTokensDelete)
 }
 
 func TestQueryDeleteAll(t *testing.T) {
@@ -36,6 +38,7 @@ func TestQueryDeleteAll(t *testing.T) {
 	t.Run("PushTokens", testPushTokensQueryDeleteAll)
 	t.Run("RefreshTokens", testRefreshTokensQueryDeleteAll)
 	t.Run("Users", testUsersQueryDeleteAll)
+	t.Run("WSSTokens", testWSSTokensQueryDeleteAll)
 }
 
 func TestSliceDeleteAll(t *testing.T) {
@@ -45,6 +48,7 @@ func TestSliceDeleteAll(t *testing.T) {
 	t.Run("PushTokens", testPushTokensSliceDeleteAll)
 	t.Run("RefreshTokens", testRefreshTokensSliceDeleteAll)
 	t.Run("Users", testUsersSliceDeleteAll)
+	t.Run("WSSTokens", testWSSTokensSliceDeleteAll)
 }
 
 func TestExists(t *testing.T) {
@@ -54,6 +58,7 @@ func TestExists(t *testing.T) {
 	t.Run("PushTokens", testPushTokensExists)
 	t.Run("RefreshTokens", testRefreshTokensExists)
 	t.Run("Users", testUsersExists)
+	t.Run("WSSTokens", testWSSTokensExists)
 }
 
 func TestFind(t *testing.T) {
@@ -63,6 +68,7 @@ func TestFind(t *testing.T) {
 	t.Run("PushTokens", testPushTokensFind)
 	t.Run("RefreshTokens", testRefreshTokensFind)
 	t.Run("Users", testUsersFind)
+	t.Run("WSSTokens", testWSSTokensFind)
 }
 
 func TestBind(t *testing.T) {
@@ -72,6 +78,7 @@ func TestBind(t *testing.T) {
 	t.Run("PushTokens", testPushTokensBind)
 	t.Run("RefreshTokens", testRefreshTokensBind)
 	t.Run("Users", testUsersBind)
+	t.Run("WSSTokens", testWSSTokensBind)
 }
 
 func TestOne(t *testing.T) {
@@ -81,6 +88,7 @@ func TestOne(t *testing.T) {
 	t.Run("PushTokens", testPushTokensOne)
 	t.Run("RefreshTokens", testRefreshTokensOne)
 	t.Run("Users", testUsersOne)
+	t.Run("WSSTokens", testWSSTokensOne)
 }
 
 func TestAll(t *testing.T) {
@@ -90,6 +98,7 @@ func TestAll(t *testing.T) {
 	t.Run("PushTokens", testPushTokensAll)
 	t.Run("RefreshTokens", testRefreshTokensAll)
 	t.Run("Users", testUsersAll)
+	t.Run("WSSTokens", testWSSTokensAll)
 }
 
 func TestCount(t *testing.T) {
@@ -99,6 +108,7 @@ func TestCount(t *testing.T) {
 	t.Run("PushTokens", testPushTokensCount)
 	t.Run("RefreshTokens", testRefreshTokensCount)
 	t.Run("Users", testUsersCount)
+	t.Run("WSSTokens", testWSSTokensCount)
 }
 
 func TestInsert(t *testing.T) {
@@ -114,6 +124,8 @@ func TestInsert(t *testing.T) {
 	t.Run("RefreshTokens", testRefreshTokensInsertWhitelist)
 	t.Run("Users", testUsersInsert)
 	t.Run("Users", testUsersInsertWhitelist)
+	t.Run("WSSTokens", testWSSTokensInsert)
+	t.Run("WSSTokens", testWSSTokensInsertWhitelist)
 }
 
 // TestToOne tests cannot be run in parallel
@@ -124,6 +136,7 @@ func TestToOne(t *testing.T) {
 	t.Run("PasswordResetTokenToUserUsingUser", testPasswordResetTokenToOneUserUsingUser)
 	t.Run("PushTokenToUserUsingUser", testPushTokenToOneUserUsingUser)
 	t.Run("RefreshTokenToUserUsingUser", testRefreshTokenToOneUserUsingUser)
+	t.Run("WSSTokenToUserUsingUser", testWSSTokenToOneUserUsingUser)
 }
 
 // TestOneToOne tests cannot be run in parallel
@@ -139,6 +152,7 @@ func TestToMany(t *testing.T) {
 	t.Run("UserToPasswordResetTokens", testUserToManyPasswordResetTokens)
 	t.Run("UserToPushTokens", testUserToManyPushTokens)
 	t.Run("UserToRefreshTokens", testUserToManyRefreshTokens)
+	t.Run("UserToWSSTokens", testUserToManyWSSTokens)
 }
 
 // TestToOneSet tests cannot be run in parallel
@@ -149,6 +163,7 @@ func TestToOneSet(t *testing.T) {
 	t.Run("PasswordResetTokenToUserUsingPasswordResetTokens", testPasswordResetTokenToOneSetOpUserUsingUser)
 	t.Run("PushTokenToUserUsingPushTokens", testPushTokenToOneSetOpUserUsingUser)
 	t.Run("RefreshTokenToUserUsingRefreshTokens", testRefreshTokenToOneSetOpUserUsingUser)
+	t.Run("WSSTokenToUserUsingWSSTokens", testWSSTokenToOneSetOpUserUsingUser)
 }
 
 // TestToOneRemove tests cannot be run in parallel
@@ -172,6 +187,7 @@ func TestToManyAdd(t *testing.T) {
 	t.Run("UserToPasswordResetTokens", testUserToManyAddOpPasswordResetTokens)
 	t.Run("UserToPushTokens", testUserToManyAddOpPushTokens)
 	t.Run("UserToRefreshTokens", testUserToManyAddOpRefreshTokens)
+	t.Run("UserToWSSTokens", testUserToManyAddOpWSSTokens)
 }
 
 // TestToManySet tests cannot be run in parallel
@@ -189,6 +205,7 @@ func TestReload(t *testing.T) {
 	t.Run("PushTokens", testPushTokensReload)
 	t.Run("RefreshTokens", testRefreshTokensReload)
 	t.Run("Users", testUsersReload)
+	t.Run("WSSTokens", testWSSTokensReload)
 }
 
 func TestReloadAll(t *testing.T) {
@@ -198,6 +215,7 @@ func TestReloadAll(t *testing.T) {
 	t.Run("PushTokens", testPushTokensReloadAll)
 	t.Run("RefreshTokens", testRefreshTokensReloadAll)
 	t.Run("Users", testUsersReloadAll)
+	t.Run("WSSTokens", testWSSTokensReloadAll)
 }
 
 func TestSelect(t *testing.T) {
@@ -207,6 +225,7 @@ func TestSelect(t *testing.T) {
 	t.Run("PushTokens", testPushTokensSelect)
 	t.Run("RefreshTokens", testRefreshTokensSelect)
 	t.Run("Users", testUsersSelect)
+	t.Run("WSSTokens", testWSSTokensSelect)
 }
 
 func TestUpdate(t *testing.T) {
@@ -216,6 +235,7 @@ func TestUpdate(t *testing.T) {
 	t.Run("PushTokens", testPushTokensUpdate)
 	t.Run("RefreshTokens", testRefreshTokensUpdate)
 	t.Run("Users", testUsersUpdate)
+	t.Run("WSSTokens", testWSSTokensUpdate)
 }
 
 func TestSliceUpdateAll(t *testing.T) {
@@ -225,4 +245,5 @@ func TestSliceUpdateAll(t *testing.T) {
 	t.Run("PushTokens", testPushTokensSliceUpdateAll)
 	t.Run("RefreshTokens", testRefreshTokensSliceUpdateAll)
 	t.Run("Users", testUsersSliceUpdateAll)
+	t.Run("WSSTokens", testWSSTokensSliceUpdateAll)
 }

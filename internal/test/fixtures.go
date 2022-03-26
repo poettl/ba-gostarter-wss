@@ -35,6 +35,7 @@ type FixtureMap struct {
 	UserDeactivatedRefreshToken1  *models.RefreshToken
 	User1PushToken                *models.PushToken
 	User1PushTokenAPN             *models.PushToken
+	User1WSSToken                 *models.WSSToken
 }
 
 // Fixtures returns a function wrapping our fixtures, which tests are allowed to manipulate.
@@ -129,6 +130,12 @@ func Fixtures() FixtureMap {
 		Provider: models.ProviderTypeApn,
 	}
 
+	f.User1WSSToken = &models.WSSToken{
+		Token:      "4e88fedf-b4b5-442d-b87c-1b1704d31050",
+		ValidUntil: now.Add(10 * 365 * 24 * time.Hour),
+		UserID:     f.User1.ID,
+	}
+
 	return f
 }
 
@@ -152,5 +159,6 @@ func Inserts() []Insertable {
 		fixtures.UserDeactivatedRefreshToken1,
 		fixtures.User1PushToken,
 		fixtures.User1PushTokenAPN,
+		fixtures.User1WSSToken,
 	}
 }

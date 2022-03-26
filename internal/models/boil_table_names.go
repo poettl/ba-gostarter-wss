@@ -10,6 +10,7 @@ var TableNames = struct {
 	PushTokens          string
 	RefreshTokens       string
 	Users               string
+	WSSTokens           string
 }{
 	AccessTokens:        "access_tokens",
 	AppUserProfiles:     "app_user_profiles",
@@ -17,4 +18,5 @@ var TableNames = struct {
 	PushTokens:          "push_tokens",
 	RefreshTokens:       "refresh_tokens",
 	Users:               "users",
+	WSSTokens:           "wss_tokens",
 }

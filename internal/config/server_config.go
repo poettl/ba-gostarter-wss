@@ -59,6 +59,7 @@ type AuthServer struct {
 	PasswordResetTokenValidity   time.Duration
 	DefaultUserScopes            []string
 	LastAuthenticatedAtThreshold time.Duration
+	WSSTokenValidity             time.Duration
 }
 
 type PathsServer struct {
@@ -184,6 +185,7 @@ func DefaultServiceConfigFromEnv() Server {
 				PasswordResetTokenValidity:   time.Second * time.Duration(util.GetEnvAsInt("SERVER_AUTH_PASSWORD_RESET_TOKEN_VALIDITY", 900)),
 				DefaultUserScopes:            util.GetEnvAsStringArr("SERVER_AUTH_DEFAULT_USER_SCOPES", []string{"app"}),
 				LastAuthenticatedAtThreshold: time.Second * time.Duration(util.GetEnvAsInt("SERVER_AUTH_LAST_AUTHENTICATED_AT_THRESHOLD", 900)),
+				WSSTokenValidity:             time.Second * time.Duration(util.GetEnvAsInt("SERVER_AUTH_WSS_TOKEN_VALIDITY", 900)),
 			},
 			Management: ManagementServer{
 				Secret:           util.GetMgmtSecret("SERVER_MANAGEMENT_SECRET"),

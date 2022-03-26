@@ -7,6 +7,16 @@ definitions:
   GetStreamResponse:
     type: string
     example: channel1
+  GetWSSTokenResponse:
+    type: object
+    required:
+      - token
+    properties:
+      token:
+        type: string
+        format: uuid
+        example: "f0f8e8f8-f0f8-f0f8-f0f8-f0f8f0f8f0f8"
+
 parameters:
   valueParam:
     required: true

@@ -2,9 +2,16 @@ package wss
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
+	"errors"
+	"net/http"
+	"time"
 
 	"allaboutapps.dev/aw/go-starter/internal/api"
+	"allaboutapps.dev/aw/go-starter/internal/models"
+	"allaboutapps.dev/aw/go-starter/internal/types/wss"
+	"allaboutapps.dev/aw/go-starter/internal/util"
 	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/websocket"
 	"github.com/labstack/echo/v4"
@@ -15,7 +22,7 @@ var (
 	upgrader = websocket.Upgrader{}
 )
 
-func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.PubSub, ws *websocket.Conn) {
+func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.PubSub, ws *websocket.Conn, userID string) {
 	errChannel := make(chan error)
 	log.Debug().Msg("Subscribing to redis channels")
 	for {
@@ -32,13 +39,19 @@ func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.P
 		case <-errChannel:
 			log.Error().Msg("Error receiving message")
 		default:
-			err := ws.WriteMessage(websocket.TextMessage, []byte(msg.Channel))
-			if err != nil {
-				errChannel <- err
-				return
+
+			if msg.Channel == userID+"-logout" {
+				log.Debug().Msg("User logged out")
+				ws.Close()
+			} else {
+				err := ws.WriteMessage(websocket.TextMessage, []byte(msg.Channel))
+				if err != nil {
+					errChannel <- err
+					return
+				}
 			}
+
 		}
-		// time.Sleep(200 * time.Millisecond)
 	}
 
 }
@@ -49,11 +62,40 @@ func GetWSSStreamRoute(s *api.Server) *echo.Route {
 
 func getWSSStreamHandler(s *api.Server) echo.HandlerFunc {
 	return func(c echo.Context) error {
+		ctx := c.Request().Context()
+		params := wss.NewGetWSSStreamRouteParams()
+		if err := util.BindAndValidateQueryParams(c, &params); err != nil {
+			return err
+		}
+
+		wssToken, err := models.WSSTokens(
+			models.WSSTokenWhere.Token.EQ(string(params.WssToken)),
+		).One(ctx, s.DB)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				log.Debug().Msg("No wss token found")
+				return echo.NewHTTPError(http.StatusUnauthorized, "No wss token found")
+			}
+			log.Error().Err(err).Msg("Error getting wss token")
+			return err
+		}
+
+		if time.Now().After(wssToken.ValidUntil) {
+			log.Debug().Msg("Wss token expired")
+			return echo.ErrUnauthorized
+		}
+
 		ws, err := upgrader.Upgrade(c.Response(), c.Request(), nil)
 		if err != nil {
 			return err
 		}
-		ctx := c.Request().Context()
+
+		_, err = wssToken.Delete(ctx, s.DB)
+		if err != nil {
+			log.Error().Err(err).Msg("Error deleting wss token")
+			return err
+		}
+
 		var subscriber *redis.PubSub
 		defer ws.Close()
 		for {
@@ -76,9 +118,9 @@ func getWSSStreamHandler(s *api.Server) echo.HandlerFunc {
 				ws.Close()
 				return err
 			}
+			channels = append(channels, wssToken.UserID+"-logout")
 			subscriber = s.Redis.Subscribe(ctx, channels...)
-			go handleSubscriptions(ctx, s, subscriber, ws)
-			// TODO handle error channel
+			go handleSubscriptions(ctx, s, subscriber, ws, wssToken.UserID)
 		}
 
 	}

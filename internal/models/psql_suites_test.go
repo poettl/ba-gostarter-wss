@@ -17,4 +17,6 @@ func TestUpsert(t *testing.T) {
 	t.Run("RefreshTokens", testRefreshTokensUpsert)
 
 	t.Run("Users", testUsersUpsert)
+
+	t.Run("WSSTokens", testWSSTokensUpsert)
 }
