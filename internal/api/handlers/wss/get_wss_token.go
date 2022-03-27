@@ -47,10 +47,8 @@ func getWSSTokenHandler(s *api.Server) echo.HandlerFunc {
 
 			return nil
 		}); err != nil {
-			log.Debug().Err(err).Msg("Failed to authenticate user")
 			return err
 		}
-
 		return util.ValidateAndReturn(c, http.StatusOK, response)
 	}
 }

@@ -5,7 +5,10 @@ info:
 paths:
   /api/v1/wss/stream:
     get:
-      description: test endpoint for wss streams
+      description: |-
+        key - (scope) - description
+        test - (app) - text description
+        testUser - (user) - text description
       tags:
         - wss
       summary: Test Endpoint for wss streams

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"allaboutapps.dev/aw/go-starter/internal/api"
+	"allaboutapps.dev/aw/go-starter/internal/api/auth"
 	"allaboutapps.dev/aw/go-starter/internal/models"
 	"allaboutapps.dev/aw/go-starter/internal/types/wss"
 	"allaboutapps.dev/aw/go-starter/internal/util"
@@ -19,7 +20,8 @@ import (
 )
 
 var (
-	upgrader = websocket.Upgrader{}
+	upgrader         = websocket.Upgrader{}
+	channelMapScopes = map[string]string{"test": auth.AuthScopeApp.String(), "testUser": auth.AuthScopeUser.String()}
 )
 
 func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.PubSub, ws *websocket.Conn, userID string) {
@@ -39,7 +41,6 @@ func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.P
 		case <-errChannel:
 			log.Error().Msg("Error receiving message")
 		default:
-
 			if msg.Channel == userID+"-logout" {
 				log.Debug().Msg("User logged out")
 				ws.Close()
@@ -54,6 +55,12 @@ func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.P
 		}
 	}
 
+}
+
+func handleForceClose(ctx context.Context, ws *websocket.Conn) {
+	time.Sleep(12 * time.Hour)
+	log.Debug().Msg("WS force close")
+	ws.Close()
 }
 
 func GetWSSStreamRoute(s *api.Server) *echo.Route {
@@ -96,8 +103,15 @@ func getWSSStreamHandler(s *api.Server) echo.HandlerFunc {
 			return err
 		}
 
+		user, err := models.FindUser(ctx, s.DB, wssToken.UserID)
+		if err != nil {
+			log.Error().Err(err).Msg("Error finding user")
+			return err
+		}
+
 		var subscriber *redis.PubSub
 		defer ws.Close()
+		go handleForceClose(ctx, ws)
 		for {
 			// Read
 			_, msg, err := ws.ReadMessage()
@@ -117,6 +131,21 @@ func getWSSStreamHandler(s *api.Server) echo.HandlerFunc {
 				log.Err(err).Msg("Failed to unmarshal channels")
 				ws.Close()
 				return err
+			}
+
+			for _, item := range channels {
+				scope, ok := channelMapScopes[item]
+				if !ok {
+					log.Debug().Msg("Channel not found")
+					ws.Close()
+					return echo.ErrUnauthorized
+				}
+				if !util.ContainsString(user.Scopes, scope) {
+					log.Debug().Msg("User not authorized")
+					ws.Close()
+					return echo.ErrUnauthorized
+				}
+
 			}
 			channels = append(channels, wssToken.UserID+"-logout")
 			subscriber = s.Redis.Subscribe(ctx, channels...)
