@@ -25,12 +25,11 @@ var (
 )
 
 func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.PubSub, ws *websocket.Conn, userID string) {
-	errChannel := make(chan error)
 	log.Debug().Msg("Subscribing to redis channels")
 	for {
 		msg, err := subscriber.ReceiveMessage(ctx)
 		if err != nil {
-			errChannel <- err
+			log.Error().Msg("Error receiving message")
 			return
 		}
 		log.Debug().Msg("Received message from redis channel \n" + msg.Channel + ": " + msg.Payload)
@@ -38,8 +37,6 @@ func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.P
 		case <-ctx.Done():
 			log.Debug().Msg("Context canceled")
 			ws.Close()
-		case <-errChannel:
-			log.Error().Msg("Error receiving message")
 		default:
 			if msg.Channel == userID+"-logout" {
 				log.Debug().Msg("User logged out")
@@ -47,7 +44,7 @@ func handleSubscriptions(ctx context.Context, s *api.Server, subscriber *redis.P
 			} else {
 				err := ws.WriteMessage(websocket.TextMessage, []byte(msg.Channel))
 				if err != nil {
-					errChannel <- err
+					log.Error().Msg("Error writing message")
 					return
 				}
 			}
